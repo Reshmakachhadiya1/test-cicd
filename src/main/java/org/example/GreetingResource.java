@@ -16,6 +16,6 @@ public class GreetingResource {
     @GET
     @Produces(MediaType.TEXT_HTML) // Ensure correct content type
     public String getGreeting() {
-        return hello.data("name", "Test CI CD Pipeline with TekTok and Webhooks").render(); // Render the template
+        return hello.data("name", "Test CI CD Pipeline with TekTok").render(); // Render the template
     }
 }
