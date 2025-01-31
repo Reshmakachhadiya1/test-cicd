@@ -4,14 +4,8 @@ FROM docker.io/library/eclipse-temurin:17-jdk as builder
 # Set the working directory
 WORKDIR /workspace/source
 
-# Copy the Maven POM and source
-COPY pom.xml .
-COPY src src/
-COPY mvnw .
-COPY .mvn .mvn
-
-# Make the mvnw script executable
-RUN chmod +x mvnw
+# Copy the entire project
+COPY . .
 
 # Build the application
 RUN ./mvnw clean package -DskipTests
