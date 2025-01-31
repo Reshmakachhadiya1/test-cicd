@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM registry.access.redhat.com/ubi8/openjdk-17:latest as builder
+FROM eclipse-temurin:17-jdk as builder
 
 # Set the working directory
 WORKDIR /workspace/source
@@ -7,15 +7,22 @@ WORKDIR /workspace/source
 # Copy the Maven POM and source
 COPY pom.xml .
 COPY src src/
+COPY mvnw .
+COPY .mvn .mvn
+
+# Make the mvnw script executable
+RUN chmod +x mvnw
 
 # Build the application
-RUN mvn clean package -DskipTests
+RUN ./mvnw clean package -DskipTests
 
 # Stage 2: Create the runtime image
-FROM registry.access.redhat.com/ubi8/openjdk-17-runtime:latest
+FROM eclipse-temurin:17-jre
+
+WORKDIR /app
 
 # Copy the built artifact from builder
-COPY --from=builder /workspace/source/target/*.jar /deployments/
+COPY --from=builder /workspace/source/target/*.jar app.jar
 
 # Set the startup command
-ENV JAVA_APP_JAR="/deployments/*.jar"
+ENTRYPOINT ["java", "-jar", "app.jar"]
