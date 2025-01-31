@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM eclipse-temurin:17-jdk as builder
+FROM docker.io/library/eclipse-temurin:17-jdk as builder
 
 # Set the working directory
 WORKDIR /workspace/source
@@ -17,7 +17,7 @@ RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 
 # Stage 2: Create the runtime image
-FROM eclipse-temurin:17-jre
+FROM docker.io/library/eclipse-temurin:17-jre
 
 WORKDIR /app
 
