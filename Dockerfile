@@ -2,13 +2,10 @@
 FROM docker.io/library/maven:3.9.6-eclipse-temurin-17 AS builder
 
 # Set the working directory
-WORKDIR /build
+WORKDIR /workspace/source
 
-# Copy the pom.xml file
-COPY ./pom.xml ./pom.xml
-
-# Copy the src directory
-COPY ./src ./src
+# Copy the entire repository content
+COPY . .
 
 # Build the application
 RUN mvn clean package -DskipTests
@@ -19,10 +16,10 @@ FROM docker.io/library/eclipse-temurin:17-jre
 WORKDIR /app
 
 # Copy the built artifacts from builder
-COPY --from=builder /build/target/quarkus-app/lib/ /app/lib/
-COPY --from=builder /build/target/quarkus-app/*.jar /app/
-COPY --from=builder /build/target/quarkus-app/app/ /app/app/
-COPY --from=builder /build/target/quarkus-app/quarkus/ /app/quarkus/
+COPY --from=builder /workspace/source/target/quarkus-app/lib/ /app/lib/
+COPY --from=builder /workspace/source/target/quarkus-app/*.jar /app/
+COPY --from=builder /workspace/source/target/quarkus-app/app/ /app/app/
+COPY --from=builder /workspace/source/target/quarkus-app/quarkus/ /app/quarkus/
 
 # Set the command to run the application
 ENTRYPOINT ["java", "-jar", "quarkus-run.jar"]
