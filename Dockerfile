@@ -1,30 +1,26 @@
 # Stage 1: Build the application
-FROM docker.io/library/maven:3.9.6-eclipse-temurin-17 AS builder
+FROM registry.access.redhat.com/ubi8/openjdk-17:latest as builder
 
-# Set the working directory
 WORKDIR /workspace/source
 
-# List contents before copying
+# Debug: List directory contents
 RUN ls -la
 
-# Copy the entire repository content
+# Copy source code
 COPY . .
 
-# List contents after copying
+# Debug: List directory contents after copy
 RUN ls -la
 
 # Build the application
-RUN mvn clean package -DskipTests
+RUN ./mvnw clean package -DskipTests
 
 # Stage 2: Create the runtime image
-FROM docker.io/library/eclipse-temurin:17-jre
+FROM registry.access.redhat.com/ubi8/openjdk-17-runtime:latest
 
-WORKDIR /app
+COPY --from=builder /workspace/source/target/quarkus-app/lib/ /deployments/lib/
+COPY --from=builder /workspace/source/target/quarkus-app/*.jar /deployments/
+COPY --from=builder /workspace/source/target/quarkus-app/app/ /deployments/app/
+COPY --from=builder /workspace/source/target/quarkus-app/quarkus/ /deployments/quarkus/
 
-# Copy the built artifacts from builder
-COPY --from=builder /workspace/source/target/quarkus-app/lib/ /app/lib/
-COPY --from=builder /workspace/source/target/quarkus-app/*.jar /app/
-COPY --from=builder /workspace/source/target/quarkus-app/app/ /app/app/
-COPY --from=builder /workspace/source/target/quarkus-app/quarkus/ /app/quarkus/
-
-ENTRYPOINT ["java", "-jar", "quarkus-run.jar"]
+ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
