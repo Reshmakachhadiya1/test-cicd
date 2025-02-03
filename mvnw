@@ -257,3 +257,13 @@ mv -- "$TMP_DOWNLOAD_DIR/$distributionUrlNameMain" "$MAVEN_HOME" || [ -d "$MAVEN
 
 clean || :
 exec_maven "$@"
+
+#!/bin/sh
+# Maven Wrapper Script
+
+MAVEN_PROJECTBASEDIR=${MAVEN_BASEDIR:-$(pwd)}
+
+WRAPPER_JAR="$MAVEN_PROJECTBASEDIR/.mvn/wrapper/maven-wrapper.jar"
+WRAPPER_LAUNCHER=org.apache.maven.wrapper.MavenWrapperMain
+
+exec java -jar "$WRAPPER_JAR" "$@"
