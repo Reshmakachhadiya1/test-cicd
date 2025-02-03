@@ -4,20 +4,17 @@ FROM registry.access.redhat.com/ubi8/openjdk-17:latest AS builder
 # Set the working directory
 WORKDIR /workspace/source
 
-# Debug: Print current directory
-RUN pwd && ls -la
+# Debug: Print workspace contents before copy
+RUN pwd && ls -la /workspace/source
 
-# Copy the project files
-COPY pom.xml .
-COPY mvnw .
-COPY .mvn .mvn
-COPY src src
+# Copy everything from the current directory
+COPY . .
+
+# Debug: Print workspace contents after copy
+RUN pwd && ls -la /workspace/source
 
 # Make mvnw executable
 RUN chmod +x mvnw
-
-# Debug: List files after copy
-RUN ls -la
 
 # Build the application
 RUN ./mvnw clean package -DskipTests
